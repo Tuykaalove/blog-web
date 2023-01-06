@@ -4,6 +4,7 @@ import "react-awesome-button/dist/styles.css";
 import Container from "react-bootstrap/Container";
 import { CategoryList } from './Component/CategoriesList';
 import { Categories } from './Component/Categories';
+import { Todos } from './Component/Todos';
 
 
 function App() {
@@ -11,7 +12,8 @@ function App() {
   return (
     <>
     <Container>
-      <Categories/>
+      { /*<Categories/> */}
+      <Todos/>
     </Container>
             
             
