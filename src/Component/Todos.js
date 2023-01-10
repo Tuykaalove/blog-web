@@ -11,6 +11,8 @@ export function Todos() {
     const [todos, setTodos] = useState([]);
     const [error, setError] = useState("");
     const [editing, setEditing] = useState();
+    const [editingTexts, setEditingTexts] = useState({});
+
 
     function handleTextChange(e){
         setText(e.target.value);
@@ -78,29 +80,78 @@ export function Todos() {
         setEditing(index);
         setText(todos[index].text);
     }
+//zasah arga3
+function editTodoInline(id, index){
+    const newEditingTexts = {...editingTexts};
+    newEditingTexts[id]= todos[index].text;
+    setEditingTexts(newEditingTexts);
+}
+
+function handleEditingText(id, e){
+    const newEditingTexts = {...editingTexts};
+    newEditingTexts[id] = e.target.value;
+    setEditingTexts(newEditingTexts);
+}
+
+function cancelEditing(id){
+    const newEditingTexts = {...editingTexts};
+    newEditingTexts[id]=undefined;
+    setEditingTexts(newEditingTexts);
+}
+
+function updateEditingText(index, id)
+{
+    const newTodos = [...todos];
+    newTodos[index].text = editingTexts[id];
+    setTodos(newTodos);
+    cancelEditing(id);
+}
+
+function hadnleKeyUp(e) {
+    if(e.code === "Enter"){
+        addTodo();
+    }
+}
 
     return (
         <div>
-            <input value={text} style={{borderColor: error ? "red": "black"}} onChange={handleTextChange}/>
-            <button onClick={addTodo}>Нэмэх</button>
+            <input value={text} style={{borderColor: error ? "red": "black"}} onChange={handleTextChange} onKeyUp={hadnleKeyUp} />
+            <button onClick={addTodo}>Хадгалах</button>
             {error && <div style={{color: "red"}}>Aldaa: {error}</div>}
             
             <ul>
                 {todos.map((todo1, index1) => {
                     const d = index1 * 2; 
                     return (
-                    <li key={todo1.id} style={{textDecoration: todo1.done ?"line-through" : "none"}}>
-                        <input type="checkbox" onChange={(e) => handleDoneChange(todo1.id, e)}/> {todo1.text} {!todo1.done && (
+                    <li key={todo1.id} style={{textDecoration: todo1.done ? "line-through" : "none"}}>
+                        {editingTexts[todo1.id] !== undefined ? (
+                    <>
+                            <input value={editingTexts[todo1.id]} onChange ={(e) => handleEditingText(todo1.id, e)}/>
+                            <button onClick={()=> cancelEditing(todo1.id)}>Болих</button>
+                            <button onClick={()=> updateEditingText(index1, todo1.id)}>Хадгалах</button>
+                    </>
+                        ) : ( 
+                    <>
+                            <input type="checkbox" onChange={(e)=> handleDoneChange(todo1.id, e)}/> {todo1.text}{!todo1.done && ( 
+                                
                             <>
+                            
+                        
                             {/*zasah arga 1*/}
                             {/*<button onClick={() => editTodoWithPrompt(todo1.id)}> Засах </button>  */}
 
                             {
                                 /* zasah arga 2*/
-                                <button onClick={() => editTodoWithCreatInput(index1)}>Засах</button>
-                            }
+                                /*<button onClick={() => editTodoWithCreatInput(index1)}>Засах</button>
+                            */}
+                            { /*zasah arga3 */}
+                                <button onClick={()=> editTodoInline(todo1.id, index1)}>Засах</button>
+                            
                             </>
-                        )}<button onClick={()=>handleDelete12(index1,d)}>Устгах</button>
+                        )}
+                        <button onClick={()=>handleDelete12(index1,d)}>Устгах</button>
+                    </>
+                        )}    
                     </li>
                     );
                     })}
